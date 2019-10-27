@@ -22,8 +22,8 @@ import (
 func main() {
 
 	app := cli.NewApp()
+	app.Usage = "Assume multiple AWS roles at once from the command line"
 	app.Version = "0.1.0"
-	app.Description = "Assume multiple AWS roles at once from the command line"
 
 	var (
 		awsCredsFile = cli.StringFlag{
