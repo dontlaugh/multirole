@@ -56,7 +56,7 @@ The config is a TOML file that looks like the following
 
 ```toml
 identity_profile = "identity"
-mfa_serial = arn:aws:iam::55555555555:mfa/youruser
+mfa_serial = "arn:aws:iam::55555555555:mfa/youruser"
 
 [[profile]]
 name = "profile_a"
