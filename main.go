@@ -90,13 +90,22 @@ func AssumeAll(conf *Config, awsCredsFile string) error {
 	cfg, err = external.LoadDefaultAWSConfig(
 		external.WithCredentialsValue(dc),
 	)
+
+	t := time.Now().UTC()
+	sessionName := fmt.Sprintf("%d%02d%02d_%02d%02d%02d",
+		t.Year(), t.Month(), t.Day(),
+		t.Hour(), t.Minute(), t.Second())
+
 	// get a new client with our default "logged in" creds
 	stsClient = sts.New(cfg)
 	var assumedRoles = make(map[string]*sts.Credentials)
 	for _, profile := range conf.Profiles {
 		ari := sts.AssumeRoleInput{}
+		// TODO: use "session chaining" instead of role chaining here.
+		// Role chaining has a timeout of 1 hour, tops.
+		ari.DurationSeconds = int64Ptr(60 * 60) // 1 hour
 		ari.RoleArn = strPtr(profile.ARN)
-		ari.RoleSessionName = strPtr("xyz") // What do we put here?
+		ari.RoleSessionName = strPtr(sessionName) // What do we put here?
 		req := stsClient.AssumeRoleRequest(&ari)
 		resp, err := req.Send(ctx)
 		if err != nil {
@@ -182,3 +191,4 @@ func LoadExistingProfile(path, profile string) (Profile, error) {
 }
 
 func strPtr(s string) *string { return &s }
+func int64Ptr(i int64) *int64 { return &i }
